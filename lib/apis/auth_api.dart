@@ -5,12 +5,10 @@ import 'package:fpdart/fpdart.dart';
 import 'package:twitter_clone/core/core.dart';
 import 'package:twitter_clone/core/providers.dart';
 
-
-final authApiProvider=Provider((ref) {
-  final account=ref.watch(appwriteAccountProvider);
-return AuthApi(account: account);
+final authApiProvider = Provider((ref) {
+  final account = ref.watch(appwriteAccountProvider);
+  return AuthApi(account: account);
 });
-
 
 abstract class IAuthApi {
   FutureEither<model.Account> signUp({
@@ -18,7 +16,7 @@ abstract class IAuthApi {
     required String password,
   });
 
-   FutureEither<model.Session> login({
+  FutureEither<model.Session> login({
     required String email,
     required String password,
   });
@@ -29,6 +27,18 @@ abstract class IAuthApi {
 class AuthApi implements IAuthApi {
   final Account _account;
   AuthApi({required Account account}) : _account = account;
+
+  @override
+  Future<model.Account?> currentUserAccount() async {
+    try {
+      return await _account.get();
+    } on AppwriteException catch (e) {
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
   @override
   FutureEither<model.Account> signUp(
       {required String email, required String password}) async {
@@ -37,18 +47,13 @@ class AuthApi implements IAuthApi {
           userId: ID.unique(), email: email, password: password);
       return right(account);
     } on AppwriteException catch (e, stackTrace) {
-      return left(Failure(e.message??'some unexpected error occured', stackTrace));
+      return left(
+          Failure(e.message ?? 'some unexpected error occured', stackTrace));
     } catch (e, stackTrace) {
       return left(Failure(e.toString(), stackTrace));
     }
   }
-  
-  @override
-  Future<model.Account?> currentUserAccount() {
-    // TODO: implement currentUserAccount
-    throw UnimplementedError();
-  }
-  
+
   @override
   FutureEither<model.Session> login({
     required String email,
@@ -70,7 +75,7 @@ class AuthApi implements IAuthApi {
       );
     }
   }
-  
+
   @override
   FutureEitherVoid logout() {
     // TODO: implement logout

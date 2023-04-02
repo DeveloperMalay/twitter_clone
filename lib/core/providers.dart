@@ -10,7 +10,12 @@ final appwriteClientProvider = Provider((ref) {
       .setSelfSigned(status: true);
 });
 
-final appwriteAccountProvider=Provider((ref)  {
-  final client=ref.watch(appwriteClientProvider);
+final appwriteAccountProvider = Provider((ref) {
+  final client = ref.watch(appwriteClientProvider);
   return Account(client);
+});
+
+final appwriteDatabaseProvider = Provider((ref) {
+  final client = ref.watch(appwriteClientProvider);
+  return Databases(client);
 });
